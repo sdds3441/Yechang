@@ -66,7 +66,7 @@ while cap.isOpened():
                                                 v[[1, 2, 4, 3, 6, 7, 8, 9, 10, 13, 15, 16, 18, 19, 23, 21], :]))
                     none_count = 0
 
-                    for None in angle:
+                    for none_count in angle:
                         if element is none:
                             none_count += 1
                     print(none_count)
