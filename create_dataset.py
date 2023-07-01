@@ -67,7 +67,7 @@ while cap.isOpened():
                     none_count = 0
 
                     for none_count in angle:
-                        if element is none:
+                        if angle is None:
                             none_count += 1
                     print(none_count)
 
