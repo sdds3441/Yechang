@@ -2,15 +2,18 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import time, os
+import math
 
 actions = ['right', 'left']
 seq_length = 30
-secs_for_action = 30
+secs_for_action = 30  # 알맞게 조절
 
 # MediaPipe hands model
 # mp_hands = mp.solutions.hands
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
+# angle = []
+
 pose = mp_pose.Pose(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5)
@@ -46,6 +49,8 @@ while cap.isOpened():
             if result.pose_landmarks is not None:
                 res = result.pose_landmarks
                 joint = np.zeros((33, 4))
+
+                # nan_count = sum(math.isnan(x) for x in angle)
                 for j, lm in enumerate(res.landmark):
                     joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
 
@@ -61,38 +66,26 @@ while cap.isOpened():
                     v = v / np.linalg.norm(v, axis=1)[:, np.newaxis]
 
                     # Get angle using arcos of dot product
+                    # angle = np.arccos(np.einsum('nt,nt->n',
+                    #     v[[0, 1, 1, 1, 0, 6, 7, 8, 8, 12, 13, 13, 12, 18, 20, 20], :],
+                    #     v[[1, 2, 4, 3, 6, 7, 8, 9, 10, 13, 15, 16, 18, 19, 23, 21], :]))
+
                     angle = np.arccos(np.einsum('nt,nt->n',
-                                                v[[0, 1, 1, 1, 0, 6, 7, 8, 8, 12, 13, 13, 12, 18, 20, 20], :],
-                                                v[[1, 2, 4, 3, 6, 7, 8, 9, 10, 13, 15, 16, 18, 19, 23, 21], :]))
-                    none_count = 0
+                                                v[[0, 12], :],
+                                                v[[1, 13], :]))
 
-                    for none_count in angle:
-                        if angle is None:
-                            none_count += 1
-                    print(none_count)
-
-                    if none_count >= 3:
-                        # print("리스트 A 안에 None이 3개 이상 존재합니다.")
-                        pass
-                    else:
+                    nan_count = sum(math.isnan(x) for x in angle)
+                    # print(nan_count)
+                    if nan_count <= 0:
                         angle = np.degrees(angle)  # Convert radian to degree
-                        # print(angle)
+                        print(angle)
 
                         angle_label = np.array([angle], dtype=np.float32)
                         angle_label = np.append(angle_label, idx)
 
                         d = np.concatenate([joint.flatten(), angle_label])
+
                         data.append(d)
-
-                    # angle = np.degrees(angle) # Convert radian to degree
-                    # print(angle)
-
-                    # angle_label = np.array([angle], dtype=np.float32)
-                    # angle_label = np.append(angle_label, idx)
-
-                    # d = np.concatenate([joint.flatten(), angle_label])
-
-                    # data.append(d)
 
                     mp_drawing.draw_landmarks(img, res, mp_pose.POSE_CONNECTIONS)
 
