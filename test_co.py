@@ -1,7 +1,9 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-from keras.models import load_model
+import tensorflow as tf
+from tensorflow import keras
+from keras.models import Model
 import socket
 
 actions = ['right', 'left']
@@ -10,7 +12,8 @@ seq_length = 30
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serverAddressPort = ("127.0.0.1", 5053)
 
-model = load_model('models/model.h5')
+model_path="C:\\Users\\김효찬\\PycharmProjects\\Yechang\\model.h5"
+model = tf.keras.load_model(model_path)
 
 # MediaPipe hands model
 mp_pose = mp.solutions.pose

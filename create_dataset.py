@@ -34,7 +34,7 @@ while cap.isOpened():
         cv2.putText(img, f'Waiting for collecting {action.upper()} action...', org=(10, 30),
                     fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)
         cv2.imshow('img', img)
-        cv2.waitKey(3000)
+        cv2.waitKey(30)
 
         start_time = time.time()
 
